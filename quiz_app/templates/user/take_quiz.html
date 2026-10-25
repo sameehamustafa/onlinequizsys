@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Taking Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<!-- Sticky Header with Accessible Timer & Live Progress -->
+<header class="sticky-quiz-header mb-4" role="banner">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <span class="badge bg-primary-light text-primary fw-semibold mb-1">
+                    {{ quiz.subject.name }}
+                </span>
+                <h1 class="h5 fw-bold mb-0 text-dark text-truncate" style="max-width: 450px;">
+                    {{ quiz.title }}
+                </h1>
+            </div>
+
+            <!-- Live Timer Region -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-md-block">
+                    <span class="text-muted small d-block">Time Remaining</span>
+                </div>
+                <!-- role="timer" with an aria-atomic polite announcer for threshold alerts -->
+                <div id="timer-badge" class="timer-badge" role="timer" aria-label="Time remaining">
+                    <i class="bi bi-stopwatch" aria-hidden="true"></i>
+                    <span id="quiz-timer" data-duration="{{ duration_seconds }}" data-quiz-id="{{ quiz.id }}">--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessible Live Progress Bar -->
+        <div class="mt-3">
+            <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
+                <span id="progress-text" aria-live="polite">0 of {{ questions|length }} answered (0%)</span>
+                <span>Total Questions: {{ questions|length }}</span>
+            </div>
+            <div class="progress" style="height: 6px;" role="progressbar" id="quiz-progress-bar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
+                 aria-label="Quiz completion progress">
+                <div class="progress-bar bg-primary" id="progress-bar-fill" style="width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Screen-Reader-Only Live Status Region for Non-Visual Announcements -->
+<div id="sr-announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+<main class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <form id="quiz-form" method="post" action="{% url 'submit_quiz' quiz_id=quiz.id %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" id="time-taken-seconds" name="time_taken_seconds" value="0">
+
+                <!-- Questions List -->
+                <div id="questions-container">
+                    {% for question in questions %}
+                        <fieldset class="card custom-card shadow-sm border-0 mb-4 question-card" 
+                                  id="question-card-{{ question.id }}" 
+                                  data-question-id="{{ question.id }}">
+                            
+                            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <legend class="h6 mb-0 fw-bold d-flex align-items-center gap-2 border-0 p-0 float-none w-auto">
+                                    <span class="badge bg-light text-dark border px-3 py-2">
+                                        Question {{ forloop.counter }} of {{ questions|length }}
+                                    </span>
+                                    <span class="status-indicator badge bg-light text-secondary border" id="status-badge-{{ question.id }}">
+                                        Unanswered
+                                    </span>
+                                </legend>
+                                <span class="badge bg-primary-light text-primary fw-semibold">
+                                    {{ question.marks }} Mark{% if question.marks > 1 %}s{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="card-body p-4">
+                                <p class="fw-bold text-dark mb-4 lh-base fs-5" id="question-text-{{ question.id }}">
+                                    {{ question.question_text|linebreaksbr }}
+                                </p>
+
+                                <!-- Radio Options Group -->
+                                <div class="options-container" role="radiogroup" aria-labelledby="question-text-{{ question.id }}">
+                                    
+                                    <!-- Option A -->
+                                    <label class="option-label" for="q{{ question.id }}_opt_a">
+                                        <input type="radio" 
+                                               id="q{{ question.id }}_opt_a" 
+                                               class="option-input visually-hidden-input" 
+                                               name="question_{{ question.id }}" 
+                                               value="A"
+                                               data-question-id="{{ question.id }}">
+                                        <div class="option-card" tabindex="-1">
+                                            <span class="option-badge" aria-hidden="true">A</span>
+                                            <span class="option-text text-dark">{{ question.option_a }}</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option B -->
+                                    <label class="option-label" for="q{{ question.id }}_opt_b">
+                                        <input type="radio" 
+                                               id="q{{ question.id }}_opt_b" 
+                                               class="option-input visually-hidden-input" 
+                                               name="question_{{ question.id }}" 
+                                               value="B"
+                                               data-question-id="{{ question.id }}">
+                                        <div class="option-card" tabindex="-1">
+                                            <span class="option-badge" aria-hidden="true">B</span>
+                                            <span class="option-text text-dark">{{ question.option_b }}</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option C -->
+                                    <label class="option-label" for="q{{ question.id }}_opt_c">
+                                        <input type="radio" 
+                                               id="q{{ question.id }}_opt_c" 
+                                               class="option-input visually-hidden-input" 
+                                               name="question_{{ question.id }}" 
+                                               value="C"
+                                               data-question-id="{{ question.id }}">
+                                        <div class="option-card" tabindex="-1">
+                                            <span class="option-badge" aria-hidden="true">C</span>
+                                            <span class="option-text text-dark">{{ question.option_c }}</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option D -->
+                                    <label class="option-label" for="q{{ question.id }}_opt_d">
+                                        <input type="radio" 
+                                               id="q{{ question.id }}_opt_d" 
+                                               class="option-input visually-hidden-input" 
+                                               name="question_{{ question.id }}" 
+                                               value="D"
+                                               data-question-id="{{ question.id }}">
+                                        <div class="option-card" tabindex="-1">
+                                            <span class="option-badge" aria-hidden="true">D</span>
+                                            <span class="option-text text-dark">{{ question.option_d }}</span>
+                                        </div>
+                                    </label>
+
+                                </div>
+                            </div>
+                        </fieldset>
+                    {% endfor %}
+                </div>
+
+                <!-- Submission Action Card -->
+                <div class="card custom-card p-4 text-center shadow-sm border-0 mt-4">
+                    <div class="d-md-flex align-items-center justify-content-between">
+                        <div class="text-md-start mb-3 mb-md-0 text-muted small" id="submit-guidance">
+                            <i class="bi bi-info-circle text-primary me-1" aria-hidden="true"></i> 
+                            Answers are auto-saved in your session. Review all questions before final submission.
+                        </div>
+                        <button type="submit" id="btn-submit-quiz" class="btn btn-primary-custom btn-lg px-5 py-2 fw-bold">
+                            <i class="bi bi-send-check-fill me-2" aria-hidden="true"></i> Submit Quiz
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- Incomplete Submission Confirmation Modal (Accessible Dialog) -->
+<div class="modal fade" id="unansweredModal" tabindex="-1" aria-labelledby="unansweredModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning-subtle text-warning-emphasis">
+                <h5 class="modal-title fw-bold" id="unansweredModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Unanswered Questions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p id="unanswered-modal-msg" class="mb-3 text-dark">
+                    You have <strong id="unanswered-count-text">0</strong> unanswered question(s).
+                </p>
+                <p class="text-muted small mb-0">
+                    Are you sure you want to submit? Unanswered questions will receive 0 marks.
+                </p>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-outline-secondary" id="btn-jump-first-unanswered">
+                    <i class="bi bi-arrow-up-circle me-1"></i> Review Unanswered
+                </button>
+                <button type="button" class="btn btn-danger fw-semibold" id="btn-confirm-incomplete-submit">
+                    Submit Anyway
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/quiz_timer.js' %}"></script>
+{% endblock %}

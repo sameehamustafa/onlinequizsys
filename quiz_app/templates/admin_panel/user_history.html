@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Attempt History for {{ target_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header with Back Link -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_user_list' %}">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ target_user.username }}'s History</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-0">
+                <i class="bi bi-clock-history text-primary me-2"></i> Attempt History: {{ target_user.get_full_name|default:target_user.username }}
+            </h2>
+        </div>
+        <a href="{% url 'admin_user_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Users
+        </a>
+    </div>
+
+    <!-- User KPI Summary -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="bi bi-person"></i>
+                </div>
+                <div>
+                    <div class="stat-value fs-4 text-truncate" style="max-width: 140px;">{{ target_user.username }}</div>
+                    <div class="stat-label">{{ target_user.email }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="bi bi-journal-check"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-info">{{ total_attempts }}</div>
+                    <div class="stat-label">Total Attempts</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-success">{{ pass_rate }}%</div>
+                    <div class="stat-label">Passed ({{ passed_attempts }})</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-warning">{{ avg_score }}%</div>
+                    <div class="stat-label">Avg. Percentage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attempts Table -->
+    <div class="card custom-card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Quiz</th>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                            <th>Time Taken</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in attempts %}
+                            <tr>
+                                <td class="text-muted fw-bold">{{ forloop.counter }}</td>
+                                <td>
+                                    <strong class="text-dark">{{ attempt.quiz.title }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border">
+                                        {{ attempt.quiz.subject.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">{{ attempt.score }}/{{ attempt.total_score }}</strong>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ attempt.percentage }}%;"></div>
+                                        </div>
+                                        <span class="fw-bold text-dark small">{{ attempt.percentage }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if attempt.passed %}
+                                        <span class="badge badge-custom badge-passed">Passed</span>
+                                    {% else %}
+                                        <span class="badge badge-custom badge-failed">Failed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">
+                                    {{ attempt.formatted_time_taken }}
+                                </td>
+                                <td class="text-muted small">
+                                    {{ attempt.completed_at|date:"M d, Y - h:i A" }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'result_detail' attempt_id=attempt.id %}" class="btn btn-sm btn-outline-primary">
+                                        View Breakdown <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    This user has not attempted any quizzes yet.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Subject Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-folder-fill text-primary me-2"></i> Subject Management
+            </h2>
+            <p class="text-muted mb-0">Create, modify, and organize academic subject categories</p>
+        </div>
+        <a href="{% url 'admin_subject_create' %}" class="btn btn-primary-custom">
+            <i class="bi bi-plus-circle me-1"></i> Add New Subject
+        </a>
+    </div>
+
+    <!-- Subject Table Card -->
+    <div class="card custom-card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Subject Name</th>
+                            <th>Description</th>
+                            <th>Quizzes</th>
+                            <th>Created Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                            <tr>
+                                <td class="text-muted fw-bold">{{ forloop.counter }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="stat-icon primary p-2 rounded" style="width: 38px; height: 38px; font-size: 1.1rem;">
+                                            <i class="bi {{ subject.icon|default:'bi-folder' }}"></i>
+                                        </div>
+                                        <strong class="text-dark">{{ subject.name }}</strong>
+                                    </div>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ subject.description|truncatewords:15|default:'No description' }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1">
+                                        {{ subject.quizzes_count }} Quizzes
+                                    </span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ subject.created_at|date:"M d, Y" }}
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a href="{% url 'admin_quiz_list' %}?subject={{ subject.id }}" class="btn btn-sm btn-outline-info" title="View Quizzes">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'admin_quiz_create' %}?subject={{ subject.id }}" class="btn btn-sm btn-outline-success" title="Add Quiz Under Subject">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </a>
+                                        <a href="{% url 'admin_subject_update' subject_id=subject.id %}" class="btn btn-sm btn-outline-primary" title="Edit Subject">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'admin_subject_delete' subject_id=subject.id %}" class="btn btn-sm btn-outline-danger" title="Delete Subject">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-folder-x fs-1 d-block mb-2 text-secondary"></i>
+                                    <p class="mb-2">No subjects found in the system.</p>
+                                    <a href="{% url 'admin_subject_create' %}" class="btn btn-primary-custom btn-sm">
+                                        Create First Subject
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

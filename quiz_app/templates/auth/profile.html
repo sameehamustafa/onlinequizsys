@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <!-- Profile Form Card -->
+        <div class="col-lg-7 mb-4">
+            <div class="card custom-card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-person-lines-fill me-2"></i> User Profile
+                    </h5>
+                    <span class="badge bg-light text-dark border">
+                        Joined {{ user.date_joined|date:"M d, Y" }}
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Username</label>
+                            <input type="text" class="form-control bg-light" value="{{ user.username }}" disabled>
+                            <div class="form-text small">Username cannot be changed.</div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary small">First Name</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary small">Last Name</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between pt-2">
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                            <a href="{% url 'change_password' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-key-fill me-1"></i> Change Password
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Summary Card -->
+        <div class="col-lg-5 mb-4">
+            <div class="card custom-card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-trophy me-2"></i> Performance Summary
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0">{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="text-muted small mb-0">{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush border-top border-bottom my-3">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <span class="text-secondary"><i class="bi bi-journal-check me-2"></i> Quizzes Attempted</span>
+                            <span class="badge bg-primary rounded-pill fs-6">{{ total_attempts }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <span class="text-secondary"><i class="bi bi-check-circle-fill text-success me-2"></i> Quizzes Passed</span>
+                            <span class="badge bg-success rounded-pill fs-6">{{ passed_attempts }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                            <span class="text-secondary"><i class="bi bi-percent text-info me-2"></i> Success Rate</span>
+                            <span class="fw-bold fs-6 text-primary">{{ pass_rate }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <a href="{% url 'quiz_history' %}" class="btn btn-light border">
+                            <i class="bi bi-clock-history me-1"></i> View Full Attempt History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

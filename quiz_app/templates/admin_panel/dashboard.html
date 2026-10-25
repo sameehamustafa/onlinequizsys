@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Admin Top Header Banner -->
+    <div class="card custom-card border-0 mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="badge bg-warning text-dark fw-bold mb-2 px-3 py-2">
+                        <i class="bi bi-shield-lock-fill me-1"></i> System Administration Control
+                    </span>
+                    <h2 class="fw-bold mb-2">Platform Overview & Management</h2>
+                    <p class="mb-0 opacity-75 fs-6">
+                        Monitor platform metrics, manage subjects, configure quizzes, curate question banks, and analyze student test performance.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="btn-group">
+                        <a href="{% url 'admin_quiz_create' %}" class="btn btn-primary-custom">
+                            <i class="bi bi-plus-circle me-1"></i> Add Quiz
+                        </a>
+                        <a href="{% url 'admin_subject_create' %}" class="btn btn-secondary-custom">
+                            <i class="bi bi-folder-plus me-1"></i> Add Subject
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="row g-3 mb-4">
+        <!-- Total Subjects -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <a href="{% url 'admin_subject_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="bi bi-folder-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ total_subjects }}</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Total Quizzes -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <a href="{% url 'admin_quiz_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class="bi bi-card-checklist"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-info">{{ total_quizzes }}</div>
+                        <div class="stat-label">Quizzes</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Total Questions -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <a href="{% url 'admin_question_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="bi bi-question-diamond-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-warning">{{ total_questions }}</div>
+                        <div class="stat-label">Questions</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Registered Students -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <a href="{% url 'admin_user_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ total_users }}</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Total Attempts -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <a href="{% url 'admin_results_list' %}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="bi bi-clipboard2-check-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-success">{{ total_attempts }}</div>
+                        <div class="stat-label">Attempts</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Global Pass Rate -->
+        <div class="col-sm-6 col-lg-4 col-xl-2">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-success">{{ overall_pass_rate }}%</div>
+                    <div class="stat-label">Pass Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Shortcuts -->
+    <div class="card custom-card p-3 mb-4 shadow-sm">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="fw-bold text-secondary me-2"><i class="bi bi-lightning-charge-fill text-warning"></i> Quick Actions:</span>
+            <a href="{% url 'admin_subject_create' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg me-1"></i> New Subject</a>
+            <a href="{% url 'admin_quiz_create' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg me-1"></i> New Quiz</a>
+            <a href="{% url 'admin_question_create' %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg me-1"></i> New Question</a>
+            <a href="{% url 'admin_user_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-person-gear me-1"></i> Manage Users</a>
+            <a href="{% url 'admin_results_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-earmark-bar-graph me-1"></i> View All Results</a>
+            <a href="/django-admin/" target="_blank" class="btn btn-sm btn-outline-dark ms-auto"><i class="bi bi-sliders me-1"></i> Django Admin</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Quiz Attempts Table -->
+        <div class="col-lg-8">
+            <div class="card custom-card shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-activity text-primary me-2"></i> Recent Platform Activity
+                    </h5>
+                    <a href="{% url 'admin_results_list' %}" class="btn btn-link btn-sm text-decoration-none p-0">View All Results</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Quiz</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attempt in recent_attempts %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="badge bg-light text-dark rounded-circle p-2 border">
+                                                    {{ attempt.user.username|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <strong class="text-dark d-block">{{ attempt.user.username }}</strong>
+                                                    <span class="text-muted small">{{ attempt.user.email }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-dark">{{ attempt.quiz.title }}</span>
+                                            <span class="badge bg-light text-secondary border d-block mt-1" style="max-width: max-content;">
+                                                {{ attempt.quiz.subject.name }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-dark">{{ attempt.score }}/{{ attempt.total_score }}</strong>
+                                            <span class="text-muted small d-block">{{ attempt.percentage }}%</span>
+                                        </td>
+                                        <td>
+                                            {% if attempt.passed %}
+                                                <span class="badge badge-custom badge-passed">Passed</span>
+                                            {% else %}
+                                                <span class="badge badge-custom badge-failed">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted small">
+                                            {{ attempt.completed_at|timesince }} ago
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'result_detail' attempt_id=attempt.id %}" class="btn btn-sm btn-outline-secondary">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            No quiz attempts recorded yet.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Quizzes List -->
+        <div class="col-lg-4">
+            <div class="card custom-card shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-card-checklist text-primary me-2"></i> Active Quizzes
+                    </h5>
+                    <a href="{% url 'admin_quiz_list' %}" class="btn btn-link btn-sm text-decoration-none p-0">Manage All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for quiz in recent_quizzes %}
+                            <div class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong class="text-dark">{{ quiz.title }}</strong>
+                                    {% if quiz.is_published %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Published</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary border">Draft</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center small text-muted">
+                                    <span><i class="bi bi-folder me-1"></i> {{ quiz.subject.name }}</span>
+                                    <span><i class="bi bi-question-circle me-1"></i> {{ quiz.q_count }} questions</span>
+                                </div>
+                                <div class="d-flex gap-2 mt-2">
+                                    <a href="{% url 'admin_question_list_by_quiz' quiz_id=quiz.id %}" class="btn btn-sm btn-light border py-0 px-2" style="font-size: 0.75rem;">
+                                        <i class="bi bi-list-check me-1"></i> Questions ({{ quiz.q_count }})
+                                    </a>
+                                    <a href="{% url 'admin_quiz_update' quiz_id=quiz.id %}" class="btn btn-sm btn-light border py-0 px-2" style="font-size: 0.75rem;">
+                                        <i class="bi bi-pencil me-1"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="p-4 text-center text-muted">
+                                <i class="bi bi-inbox fs-2 mb-2"></i>
+                                <p class="mb-0 small">No quizzes created yet.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

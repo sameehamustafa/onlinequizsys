@@ -1,0 +1,35 @@
+from .auth_views import (
+    register_view,
+    login_view,
+    logout_view,
+    profile_view,
+    change_password_view,
+)
+from .user_views import (
+    user_dashboard,
+    quiz_list,
+    quiz_detail,
+    take_quiz,
+    submit_quiz,
+    result_detail,
+    quiz_history,
+)
+from .admin_views import (
+    admin_dashboard,
+    subject_list,
+    subject_create,
+    subject_update,
+    subject_delete,
+    quiz_manage_list,
+    quiz_create,
+    quiz_update,
+    quiz_delete,
+    question_manage_list,
+    question_create,
+    question_update,
+    question_delete,
+    user_manage_list,
+    user_history_view,
+    user_delete,
+    results_overview,
+)

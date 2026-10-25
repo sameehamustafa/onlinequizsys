@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Welcome Header Banner -->
+    <div class="card custom-card border-0 mb-4" style="background: var(--primary-gradient); color: #fff;">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="badge bg-white text-primary fw-bold mb-2 px-3 py-2">Student Portal</span>
+                    <h2 class="fw-bold mb-2">Hello, {{ user.first_name|default:user.username }}! 👋</h2>
+                    <p class="mb-0 opacity-90 fs-6">
+                        Ready to test your skills today? Select a subject, attempt challenging quizzes, and track your progress in real-time.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="{% url 'quiz_list' %}" class="btn btn-light btn-lg px-4 fw-bold text-primary shadow-sm">
+                        <i class="bi bi-play-circle-fill me-1"></i> Browse Quizzes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metric / KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="bi bi-card-checklist"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_attempts }}</div>
+                    <div class="stat-label">Total Attempted</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-success">{{ passed_attempts }}</div>
+                    <div class="stat-label">Quizzes Passed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-info">{{ pass_rate }}%</div>
+                    <div class="stat-label">Pass Rate</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div>
+                    <div class="stat-value text-warning">{{ avg_score }}%</div>
+                    <div class="stat-label">Avg. Percentage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Subjects Section -->
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-mortarboard me-2 text-primary"></i> Explore Subjects
+                </h4>
+                <a href="{% url 'quiz_list' %}" class="btn btn-sm btn-outline-primary fw-semibold">
+                    View All Quizzes <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="row g-3 mb-4">
+                {% for subject in subjects %}
+                    <div class="col-md-6">
+                        <a href="{% url 'quiz_list' %}?subject={{ subject.id }}" class="text-decoration-none">
+                            <div class="card custom-card custom-card-hover h-100 p-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="stat-icon primary fs-3">
+                                        <i class="bi {{ subject.icon|default:'bi-journal-code' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="fw-bold mb-1 text-dark">{{ subject.name }}</h5>
+                                        <p class="text-muted small mb-1">{{ subject.description|truncatewords:10|default:'Practice quizzes and enhance mastery.' }}</p>
+                                        <span class="badge bg-light text-secondary border">
+                                            <i class="bi bi-file-earmark-check me-1"></i> {{ subject.published_quizzes_count }} Quizzes Available
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="card custom-card p-4 text-center text-muted">
+                            <i class="bi bi-inbox fs-1 mb-2"></i>
+                            <p class="mb-0">No active subjects available at this time.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Featured Quizzes Grid -->
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-stars me-2 text-warning"></i> Featured Quizzes
+                </h4>
+            </div>
+
+            <div class="row g-3">
+                {% for quiz in featured_quizzes %}
+                    <div class="col-md-6">
+                        <div class="card custom-card h-100 d-flex flex-column">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1">
+                                        {{ quiz.subject.name }}
+                                    </span>
+                                    <span class="text-muted small">
+                                        <i class="bi bi-clock me-1"></i> {{ quiz.duration_minutes }} mins
+                                    </span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">{{ quiz.title }}</h5>
+                                <p class="text-muted small flex-grow-1 mb-3">
+                                    {{ quiz.description|truncatewords:14|default:'Test your knowledge and evaluate your skills.' }}
+                                </p>
+                                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                    <span class="text-secondary small">
+                                        <i class="bi bi-question-circle me-1"></i> {{ quiz.total_questions }} Questions
+                                    </span>
+                                    <a href="{% url 'quiz_detail' quiz_id=quiz.id %}" class="btn btn-sm btn-primary-custom">
+                                        Start Quiz <i class="bi bi-play-fill"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="card custom-card p-4 text-center text-muted">
+                            <i class="bi bi-file-earmark-x fs-1 mb-2"></i>
+                            <p class="mb-0">No published quizzes available.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Attempts Sidebar -->
+        <div class="col-lg-4">
+            <div class="card custom-card shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history me-1 text-primary"></i> Recent Attempts
+                    </h5>
+                    <a href="{% url 'quiz_history' %}" class="btn btn-link btn-sm text-decoration-none p-0">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for attempt in recent_attempts %}
+                            <div class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong class="text-dark">{{ attempt.quiz.title }}</strong>
+                                    {% if attempt.passed %}
+                                        <span class="badge badge-custom badge-passed">Passed</span>
+                                    {% else %}
+                                        <span class="badge badge-custom badge-failed">Failed</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center small text-muted">
+                                    <span>Score: <strong class="text-dark">{{ attempt.score }}/{{ attempt.total_score }}</strong> ({{ attempt.percentage }}%)</span>
+                                    <span>{{ attempt.completed_at|timesince }} ago</span>
+                                </div>
+                                <div class="text-end mt-2">
+                                    <a href="{% url 'result_detail' attempt_id=attempt.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;">
+                                        Review Details <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="p-4 text-center text-muted">
+                                <i class="bi bi-clipboard2-pulse fs-2 mb-2 text-secondary"></i>
+                                <p class="mb-0 small">You haven't attempted any quizzes yet. Pick a quiz and start your first test!</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

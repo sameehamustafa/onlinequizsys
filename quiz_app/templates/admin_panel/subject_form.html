@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Subject{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card custom-card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-folder-plus me-2"></i> {{ action }} Subject
+                    </h5>
+                    <a href="{% url 'admin_subject_list' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Subjects
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger p-2 small">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Subject Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-secondary small">Bootstrap Icon Class</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-emoji-smile"></i></span>
+                                {{ form.icon }}
+                            </div>
+                            <div class="form-text small text-muted">
+                                Examples: <code>bi-journal-code</code>, <code>bi-cpu</code>, <code>bi-database</code>, <code>bi-globe</code>, <code>bi-code-slash</code>
+                            </div>
+                            {% if form.icon.errors %}
+                                <div class="text-danger small mt-1">{{ form.icon.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2">
+                            <a href="{% url 'admin_subject_list' %}" class="btn btn-secondary-custom">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="bi bi-check-lg me-1"></i> {{ action }} Subject
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

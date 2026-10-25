@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Quiz{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card custom-card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-card-heading me-2"></i> {{ action }} Quiz
+                    </h5>
+                    <a href="{% url 'admin_quiz_list' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Quizzes
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger p-2 small">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Academic Subject *</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger small mt-1">{{ form.subject.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Quiz Title *</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small">Description & Instructions</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary small">Duration (Minutes) *</label>
+                                {{ form.duration_minutes }}
+                                <div class="form-text small">E.g., 10 for a 10-minute quiz.</div>
+                                {% if form.duration_minutes.errors %}
+                                    <div class="text-danger small mt-1">{{ form.duration_minutes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary small">Passing Percentage (%) *</label>
+                                {{ form.pass_percentage }}
+                                <div class="form-text small">Passing benchmark (e.g. 50%).</div>
+                                {% if form.pass_percentage.errors %}
+                                    <div class="text-danger small mt-1">{{ form.pass_percentage.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                {{ form.is_published }}
+                                <label class="form-check-label fw-semibold text-dark ms-2" for="{{ form.is_published.id_for_label }}">
+                                    Publish Quiz (Visible & accessible to students immediately)
+                                </label>
+                            </div>
+                            {% if form.is_published.errors %}
+                                <div class="text-danger small mt-1">{{ form.is_published.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                            <a href="{% url 'admin_quiz_list' %}" class="btn btn-secondary-custom">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="bi bi-check-lg me-1"></i> {{ action }} Quiz
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

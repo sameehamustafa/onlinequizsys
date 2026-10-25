@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}My Quiz History{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-clock-history text-primary me-2"></i> My Quiz Attempt History
+            </h2>
+            <p class="text-muted mb-0">Track all your past attempts, scores, and performance evolution</p>
+        </div>
+        <a href="{% url 'quiz_list' %}" class="btn btn-primary-custom">
+            <i class="bi bi-play-circle-fill me-1"></i> Take New Quiz
+        </a>
+    </div>
+
+    <!-- History Table Card -->
+    <div class="card custom-card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Quiz Title</th>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                            <th>Time Taken</th>
+                            <th>Date & Time</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in attempts %}
+                            <tr>
+                                <td class="text-muted fw-bold">{{ forloop.counter }}</td>
+                                <td>
+                                    <strong class="text-dark d-block">{{ attempt.quiz.title }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border">
+                                        <i class="bi {{ attempt.quiz.subject.icon|default:'bi-folder' }} me-1"></i>
+                                        {{ attempt.quiz.subject.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark">{{ attempt.score }} / {{ attempt.total_score }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %}" role="progressbar" style="width: {{ attempt.percentage }}%;"></div>
+                                        </div>
+                                        <span class="fw-bold text-dark small">{{ attempt.percentage }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if attempt.passed %}
+                                        <span class="badge badge-custom badge-passed">
+                                            <i class="bi bi-check-circle me-1"></i> Passed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-custom badge-failed">
+                                            <i class="bi bi-x-circle me-1"></i> Failed
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">
+                                    <i class="bi bi-stopwatch me-1"></i> {{ attempt.formatted_time_taken }}
+                                </td>
+                                <td class="text-muted small">
+                                    {{ attempt.completed_at|date:"M d, Y - h:i A" }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'result_detail' attempt_id=attempt.id %}" class="btn btn-sm btn-outline-primary">
+                                        View Result <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="bi bi-journal-x fs-1 d-block mb-2 text-secondary"></i>
+                                    <p class="mb-2">You have not completed any quizzes yet.</p>
+                                    <a href="{% url 'quiz_list' %}" class="btn btn-primary-custom btn-sm">
+                                        Explore Available Quizzes
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

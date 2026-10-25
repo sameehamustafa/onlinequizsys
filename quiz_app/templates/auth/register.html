@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Student Account | Quizify{% endblock %}
+
+{% block extra_css %}
+<!-- Google Fonts: Plus Jakarta Sans / Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS CDN with Custom Brand Tokens -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        purple: '#6F42C1',
+                        violet: '#7C4DFF',
+                        indigo: '#4F46E5',
+                        blue: '#007BFF',
+                        slate: '#F8FAFC',
+                    }
+                },
+                fontFamily: {
+                    sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                },
+                boxShadow: {
+                    'card-soft': '0 12px 35px rgba(0, 0, 0, 0.06)',
+                    'glow-purple': '0 0 20px rgba(111, 66, 193, 0.35)',
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .input-wrapper {
+        position: relative;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .input-wrapper:focus-within {
+        transform: translateY(-1px);
+    }
+    .auth-input {
+        background-color: #F8FAFC !important;
+        border: 1.5px solid #E2E8F0 !important;
+        transition: all 0.2s ease !important;
+    }
+    .auth-input:focus {
+        background-color: #FFFFFF !important;
+        border-color: #7C4DFF !important;
+        box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12) !important;
+        outline: none !important;
+    }
+    .btn-gradient {
+        background: linear-gradient(135deg, #6F42C1 0%, #4F46E5 100%) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(135deg, #6034b3 0%, #4338ca 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 22px rgba(111, 66, 193, 0.32) !important;
+    }
+    .btn-gradient:active {
+        transform: translateY(0) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="min-h-[85vh] flex items-center justify-center py-10 px-4 bg-[#F8F9FA]">
+    <div class="w-full max-w-[540px]">
+        
+        <!-- Main Card Container -->
+        <div class="bg-white rounded-[18px] shadow-card-soft border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-xl">
+            
+            <!-- Purple Gradient Header Banner -->
+            <div class="relative bg-gradient-to-br from-[#6F42C1] via-[#7C4DFF] to-[#4F46E5] text-white px-8 py-9 text-center overflow-hidden">
+                <!-- Background Ambient Glow -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-900/20 rounded-full blur-xl pointer-events-none"></div>
+
+                <!-- Glowing User+ Icon Badge -->
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-glow-purple mb-3.5 transition-transform hover:scale-105">
+                    <i class="bi bi-person-plus-fill text-2xl text-white"></i>
+                </div>
+                
+                <h1 class="text-2xl font-bold tracking-tight text-white mb-1.5 font-sans">
+                    Create Student Account
+                </h1>
+                <p class="text-purple-100/85 text-sm font-medium max-w-sm mx-auto">
+                    Join Quizify to practice, evaluate, and test your knowledge
+                </p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8 sm:p-9">
+                
+                <!-- Django Global Non-field Errors -->
+                {% if form.non_field_errors %}
+                    <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'register' %}" novalidate>
+                    {% csrf_token %}
+
+                    <!-- 2-Column Responsive Grid: First Name & Last Name -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <!-- First Name -->
+                        <div>
+                            <label for="id_first_name" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                                First Name
+                            </label>
+                            <div class="input-wrapper">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="bi bi-person text-lg"></i>
+                                </div>
+                                <input type="text" 
+                                       name="first_name" 
+                                       id="id_first_name" 
+                                       required
+                                       placeholder="e.g. Alex"
+                                       value="{{ form.first_name.value|default:'' }}"
+                                       class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                            </div>
+                            {% if form.first_name.errors %}
+                                <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.first_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label for="id_last_name" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                                Last Name
+                            </label>
+                            <div class="input-wrapper">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="bi bi-person text-lg"></i>
+                                </div>
+                                <input type="text" 
+                                       name="last_name" 
+                                       id="id_last_name" 
+                                       required
+                                       placeholder="e.g. Morgan"
+                                       value="{{ form.last_name.value|default:'' }}"
+                                       class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                            </div>
+                            {% if form.last_name.errors %}
+                                <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.last_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Single Column: Username -->
+                    <div class="mb-4">
+                        <label for="id_username" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Username
+                        </label>
+                        <div class="input-wrapper">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="bi bi-at text-lg"></i>
+                            </div>
+                            <input type="text" 
+                                   name="username" 
+                                   id="id_username" 
+                                   required
+                                   placeholder="Choose a unique username"
+                                   value="{{ form.username.value|default:'' }}"
+                                   class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                        </div>
+                        {% if form.username.errors %}
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Single Column: Email Address -->
+                    <div class="mb-4">
+                        <label for="id_email" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Email Address
+                        </label>
+                        <div class="input-wrapper">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="bi bi-envelope text-lg"></i>
+                            </div>
+                            <input type="email" 
+                                   name="email" 
+                                   id="id_email" 
+                                   required
+                                   placeholder="alex@example.com"
+                                   value="{{ form.email.value|default:'' }}"
+                                   class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                        </div>
+                        {% if form.email.errors %}
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Single Column: Password -->
+                    <div class="mb-4">
+                        <label for="id_password1" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Password
+                        </label>
+                        <div class="input-wrapper">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="bi bi-lock text-lg"></i>
+                            </div>
+                            <input type="password" 
+                                   name="password1" 
+                                   id="id_password1" 
+                                   required
+                                   placeholder="Minimum 8 characters"
+                                   class="auth-input w-full pl-11 pr-11 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('id_password1', 'toggle-p1-icon')"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                                    aria-label="Toggle password visibility">
+                                <i id="toggle-p1-icon" class="bi bi-eye text-lg"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.password1.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Single Column: Confirm Password -->
+                    <div class="mb-6">
+                        <label for="id_password2" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Confirm Password
+                        </label>
+                        <div class="input-wrapper">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="bi bi-shield-check text-lg"></i>
+                            </div>
+                            <input type="password" 
+                                   name="password2" 
+                                   id="id_password2" 
+                                   required
+                                   placeholder="Re-enter password"
+                                   class="auth-input w-full pl-11 pr-11 py-2.5 rounded-xl text-sm text-slate-800 placeholder-slate-400 font-medium">
+                            <button type="button" 
+                                    onclick="togglePasswordVisibility('id_password2', 'toggle-p2-icon')"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                                    aria-label="Toggle confirm password visibility">
+                                <i id="toggle-p2-icon" class="bi bi-eye text-lg"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ form.password2.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Primary CTA Button -->
+                    <button type="submit" class="btn-gradient w-full py-3.5 px-6 rounded-xl text-white font-semibold text-sm tracking-wide shadow-md flex items-center justify-center gap-2">
+                        <i class="bi bi-check2-circle text-lg"></i>
+                        <span>Register Account</span>
+                    </button>
+                </form>
+
+                <!-- Footer Switch Link -->
+                <div class="mt-7 pt-6 border-t border-slate-100 text-center">
+                    <p class="text-xs text-slate-500 font-medium">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="text-[#007BFF] hover:text-[#0056b3] font-bold transition-colors ml-1 inline-flex items-center gap-0.5">
+                            Sign In here
+                            <i class="bi bi-chevron-right text-[10px]"></i>
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Interactive Show/Hide Toggle Script -->
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (!input || !icon) return;
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+</script>
+{% endblock %}
